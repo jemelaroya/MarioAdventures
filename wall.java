@@ -56,8 +56,8 @@ Rectangle wallBounds = new Rectangle(x, y, WIDTH, height);
 Rectangle wallBoundsTop = new Rectangle(x, 0, WIDTH, game.HEIGHT - (height + GAP));
 
 //If birdman collids with a wall, he dies and the game, bird, and walls are all reset
-if ( (wallBounds.intersects(crappybird.getBounds()) ) || (wallBoundsTop.intersects(crappybird.getBounds()))){
-crappybird.reset();
+if ( (wallBounds.intersects(Crappybird.getBounds()) ) || (wallBoundsTop.intersects(Crappybird.getBounds()))){
+Crappybird.reset();
 died();
 }
 
