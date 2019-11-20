@@ -21,7 +21,7 @@ int highscore;
 //gets the background from imgur
 static BufferedImage img = null;{
 try {
-img = ImageIO.read(new URL("https://imgur.com/Y7I3boe.png"));
+img = ImageIO.read(new URL("https://imgur.com/2EFRmfr.png"));
 } catch (IOException e) {
 System.out.println("WRONG MENU");
 }}
