@@ -1,50 +1,79 @@
 package crappyBird;
 
 import java.awt.Graphics;
-import javax.imageio.ImageIO;
-import javax.swing.JPanel;
-import java.awt.event.*;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Random;
+import javax.imageio.ImageIO;
 
-/*
- * This screen just waits for a mouseclick, whereupon it is removed from the JFrame and replaced with the game
- * I'd like not have to wait for the picture to download though, so I need to figure out how to package the images
- * within the Jar file.
+/* Here's how this works:
+ *
+ * || || || ||
+ * || || --> || || --REPEAT-->
+ * || || || ||
+ * wall wall2 wall2 wall(loops back around at a different height)
+ *
  */
 
-public class menu extends JPanel{
-private static final long serialVersionUID = 1L;
-int highscore;
+public class wall {
 
-//gets the background from imgur
+Random rnd = new Random(); //used to generate a random height for dat gap
+
+int x ; //the x position of the wall, always changing (right to left)
+int y = rnd.nextInt(game.HEIGHT - 400) + 200; //generates the y value that is the top of the bottom wall
+static int speed = - 6; //scrolling speed
+int WIDTH = 45; //width of a wall, it's a constant
+int height = game.HEIGHT - y; //height of the wall, just the height of the window - how high the wall is
+int GAP = 200; //gap size (also a constant)
+
+//procures the Wall image from Imgur
 static BufferedImage img = null;{
 try {
-img = ImageIO.read(new URL("https://imgur.com/Y7I3boe.png"));
+img = ImageIO.read(new URL("http://i.imgur.com/4SUsUuc.png"));
+
 } catch (IOException e) {
-System.out.println("WRONG MENU");
+System.out.println("WRONG WALL"); //prints "WRONG WALL" if there's trouble with Imgur
 }}
 
-boolean startGame = false; //the boolean toggle that starts the game over in ExecuteMe
-
-
-public menu(){
-setFocusable(true); //waits for a mouseclick, then toggles startGame
-addMouseListener(new MouseAdapter(){
-@Override
-public void mouseClicked(MouseEvent e) {
-startGame = true;
+public wall(int i){ //allows me to differentiate the x positions of the two walls
+this.x = i;
 }
 
-});
+//draws the wall
+public void paint(Graphics g){
+g.drawImage(img, x, y, null); //top part
+g.drawImage(img, x, ( -game.HEIGHT ) + ( y - GAP), null); //bottom part
 }
 
-public void paint (Graphics g){
-super.paint(g);
+public void move(){
 
-g.drawImage(img, 0, 0, null); //paints background
+x += speed; //scrolls the wall
+
+//These Rectanlges are used to detect collisions
+Rectangle wallBounds = new Rectangle(x, y, WIDTH, height);
+Rectangle wallBoundsTop = new Rectangle(x, 0, WIDTH, game.HEIGHT - (height + GAP));
+
+//If birdman collids with a wall, he dies and the game, bird, and walls are all reset
+if ( (wallBounds.intersects(crappybird.getBounds()) ) || (wallBoundsTop.intersects(crappybird.getBounds()))){
+crappybird.reset();
+died();
+}
+
+//pushes the wall back to just off screen on the right when it gets offscreen on the left (the loop)
+if (x <= 0 - WIDTH){
+x = game.WIDTH;
+y = rnd.nextInt(game.HEIGHT - 400) + 200;
+height = game.HEIGHT - y;
+}
+}
 
 
+//this is executed on death, just sets a random y value and tells Game that the bird died :(
+public void died(){
+y = rnd.nextInt(game.HEIGHT - 400) + 200;
+height = game.HEIGHT - y;
+game.dead = true;
 }
 }
